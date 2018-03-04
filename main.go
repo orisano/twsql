@@ -6,12 +6,19 @@ import (
 	"text/template/parse"
 )
 
-func skipToken(b []byte) []byte {
+func SkipToken(b []byte) []byte {
 	return b[6:]
 }
 
 func main() {
-	forest, err := parse.Parse("twsql", `SELECT * FROM foo WHERE username = /* .UserName */'john'`, "/*", "*/")
+	forest, err := parse.Parse("twsql", `
+SELECT
+	*
+FROM
+	foo
+WHERE
+	username = /* .UserName */'john'
+`, "/*", "*/")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -23,7 +30,7 @@ func main() {
 		case *parse.TextNode:
 			t := node.Text
 			if skip {
-				t = skipToken(t)
+				t = SkipToken(t)
 				skip = false
 			}
 			os.Stdout.Write(t)
